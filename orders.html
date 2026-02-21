@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pesanan Saya - YandiTriCraft</title>
+  
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    .orders-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      min-height: calc(100vh - 150px);
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .page-header h1 i { color: var(--primary); }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      background: var(--white);
+      padding: 1rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .filter-tab {
+      padding: 0.7rem 1.5rem;
+      border: 2px solid var(--gray-light);
+      background: transparent;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      font-family: inherit;
+      color: var(--secondary);
+    }
+
+    .filter-tab:hover,
+    .filter-tab.active {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(238,77,45,0.05);
+    }
+
+    .order-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+    }
+
+    .order-card:hover { box-shadow: var(--shadow-lg); }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--gray-light);
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .order-info h3 {
+      font-size: 1.1rem;
+      color: var(--secondary);
+      margin-bottom: 0.3rem;
+    }
+
+    .order-info p {
+      color: var(--gray);
+      font-size: 0.85rem;
+    }
+
+    .order-status {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .order-status.pending { background: rgba(243,156,18,0.15); color: #e67e22; }
+    .order-status.confirmed { background: rgba(52,152,219,0.15); color: #2980b9; }
+    .order-status.processing { background: rgba(155,89,182,0.15); color: #8e44ad; }
+    .order-status.shipped { background: rgba(46,204,113,0.15); color: #27ae60; }
+    .order-status.delivered { background: rgba(39,174,96,0.15); color: #1e8449; }
+    .order-status.cancelled { background: rgba(231,76,60,0.15); color: #c0392b; }
+
+    .order-items { margin-bottom: 1rem; }
+
+    .order-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--gray-light);
+    }
+
+    .order-item:last-child { border-bottom: none; }
+
+    .order-item img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: var(--radius);
+    }
+
+    .order-item-info { flex: 1; }
+    .order-item-name { font-weight: 600; margin-bottom: 0.3rem; color: var(--secondary); }
+    .order-item-qty { color: var(--gray); font-size: 0.9rem; }
+    .order-item-price { font-weight: 600; color: var(--primary); margin-top: 0.3rem; }
+
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 2px solid var(--gray-light);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .order-total span { color: var(--gray); font-size: 0.9rem; }
+    .order-total strong { font-size: 1.3rem; color: var(--primary); margin-left: 0.5rem; }
+
+    .order-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+    .order-btn {
+      padding: 0.7rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+    }
+
+    .btn-whatsapp:hover { background: #128C7E; }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gray-light);
+      color: var(--secondary);
+    }
+
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    .btn-danger {
+      background: transparent;
+      border: 2px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover { background: var(--danger); color: white; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .empty-state i { font-size: 5rem; color: var(--gray-light); margin-bottom: 1.5rem; }
+    .empty-state h3 { font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.5rem; }
+    .empty-state p { color: var(--gray); margin-bottom: 2rem; }
+
+    .empty-state .btn {
+      padding: 1rem 2rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .empty-state .btn:hover { background: var(--primary-dark); }
+
+    /* Order Detail Modal */
+    .order-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .order-modal.active { display: flex; }
+
+    .order-modal-content {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 { font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .modal-body { padding: 1.5rem; }
+
+    .detail-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-light);
+    }
+
+    .detail-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .detail-section h4 {
+      font-size: 1rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .detail-section h4 i { color: var(--primary); }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+    }
+
+    .detail-row span:first-child { color: var(--gray); }
+    .detail-row span:last-child { font-weight: 500; color: var(--secondary); }
+    .detail-row.total span:last-child { font-size: 1.2rem; color: var(--primary); font-weight: 700; }
+
+    .tracking-timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+
+    .tracking-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--gray-light);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 1.5rem;
+    }
+
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-dot {
+      position: absolute;
+      left: -24px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--gray-light);
+      border: 3px solid var(--white);
+    }
+
+    .timeline-item.active .timeline-dot { background: var(--primary); }
+    .timeline-item.completed .timeline-dot { background: var(--success); }
+
+    .timeline-content h5 { font-size: 0.95rem; color: var(--secondary); margin-bottom: 0.2rem; }
+    .timeline-content p { font-size: 0.8rem; color: var(--gray); }
+
+    @media (max-width: 768px) {
+      .page-header h1 { font-size: 1.5rem; }
+      .order-header { flex-direction: column; align-items: flex-start; }
+      .order-footer { flex-direction: column; align-items: flex-start; }
+      .order-actions { width: 100%; }
+      .order-btn { flex: 1; justify-content: center; }
+      .filter-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 0.5rem; }
+      .filter-tab { white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader">
+    <div class="loader">
+      <div class="loader-logo"><i class="fas fa-gift"></i><span>YandiTriCraft</span></div>
+      <div class="loader-spinner"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-main">
+      <div class="header-content" style="max-width:1200px;margin:0 auto;">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fas fa-gift"></i></div>
+          <div class="logo-text-container">
+            <div class="logo-text">YandiTriCraft</div>
+          </div>
+        </a>
+        <div class="header-icons">
+          <a href="dashboard.html" class="icon-btn" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
+          <a href="index.html" class="icon-btn" title="Beranda"><i class="fas fa-home"></i></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="orders-container">
+    <div class="page-header">
+      <h1><i class="fas fa-shopping-bag"></i> Pesanan Saya</h1>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="dashboard.html">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Pesanan</span>
+      </div>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-status="all">Semua</button>
+      <button class="filter-tab" data-status="pending">Menunggu</button>
+      <button class="filter-tab" data-status="confirmed">Dikonfirmasi</button>
+      <button class="filter-tab" data-status="processing">Diproses</button>
+      <button class="filter-tab" data-status="shipped">Dikirim</button>
+      <button class="filter-tab" data-status="delivered">Selesai</button>
+      <button class="filter-tab" data-status="cancelled">Dibatalkan</button>
+    </div>
+
+    <div id="orders-list">
+      <!-- Orders will be rendered here -->
+    </div>
+
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <i class="fas fa-inbox"></i>
+      <h3>Tidak Ada Pesanan</h3>
+      <p>Belum ada pesanan dengan status ini</p>
+      <a href="index.html" class="btn"><i class="fas fa-shopping-cart"></i> Mulai Belanja</a>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div class="order-modal" id="order-modal">
+    <div class="order-modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-receipt"></i> Detail Pesanan</h2>
+        <button class="modal-close" id="modal-close">×</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Detail will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="js/supabase-config.js"></script>
+  <script>
+    let allOrders = [];
+    let currentFilter = 'all';
+    let currentUser = null;
+
+    const statusText = {
+      pending: 'Menunggu Konfirmasi',
+      confirmed: 'Dikonfirmasi',
+      processing: 'Sedang Diproses',
+      shipped: 'Dalam Pengiriman',
+      delivered: 'Selesai',
+      cancelled: 'Dibatalkan'
+    };
+
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      currentUser = user;
+      await loadOrders();
+      document.getElementById('preloader').classList.add('hidden');
+    }
+
+    async function loadOrders() {
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error:', error);
+        return;
+      }
+      
+      allOrders = orders || [];
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const filtered = currentFilter === 'all' 
+        ? allOrders 
+        : allOrders.filter(o => o.status === currentFilter);
+      
+      const container = document.getElementById('orders-list');
+      const emptyState = document.getElementById('empty-state');
+      
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      container.innerHTML = filtered.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const date = new Date(order.created_at).toLocaleDateString('id-ID', {
+          day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        
+        return `
+          <div class="order-card">
+            <div class="order-header">
+              <div class="order-info">
+                <h3>${order.order_number}</h3>
+                <p><i class="fas fa-calendar-alt"></i> ${date}</p>
+              </div>
+              <span class="order-status ${order.status}">${statusText[order.status] || order.status}</span>
+            </div>
+            
+            <div class="order-items">
+              ${items.slice(0, 2).map(item => `
+                <div class="order-item">
+                  <img src="${item.image}" alt="${item.name}">
+                  <div class="order-item-info">
+                    <div class="order-item-name">${item.name}</div>
+                    <div class="order-item-qty">${item.qty} × Rp ${formatPrice(item.price)}</div>
+                    <div class="order-item-price">Rp ${formatPrice(item.price * item.qty)}</div>
+                  </div>
+                </div>
+              `).join('')}
+              ${items.length > 2 ? `<p style="color:var(--gray);font-size:0.9rem;padding:0.5rem 0;">+${items.length - 2} produk lainnya</p>` : ''}
+            </div>
+            
+            <div class="order-footer">
+              <div class="order-total">
+                <span>Total Pembayaran:</span>
+                <strong>Rp ${formatPrice(order.total)}</strong>
+              </div>
+              <div class="order-actions">
+                <button class="order-btn btn-primary" onclick="viewDetail('${order.id}')">
+                  <i class="fas fa-eye"></i> Detail
+                </button>
+                <a href="https://wa.me/6285134818196?text=${encodeURIComponent('Halo, saya ingin konfirmasi pesanan ' + order.order_number)}" target="_blank" class="order-btn btn-whatsapp">
+                  <i class="fab fa-whatsapp"></i> Hubungi
+                </a>
+                ${order.status === 'pending' ? `
+                  <button class="order-btn btn-danger" onclick="cancelOrder('${order.id}')">
+                    <i class="fas fa-times"></i> Batalkan
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('id-ID').format(price);
+    }
+
+    function viewDetail(orderId) {
+      const order = allOrders.find(o => o.id === orderId);
+      if (!order) return;
+      
+      const items = Array.isArray(order.items) ? order.items : [];
+      const date = new Date(order.created_at).toLocaleDateString('id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      
+      const modalBody = document.getElementById('modal-body');
+      modalBody.innerHTML = `
+        <div class="detail-section">
+          <h4><i class="fas fa-info-circle"></i> Informasi Pesanan</h4>
+          <div class="detail-row">
+            <span>No. Pesanan</span>
+            <span>${order.order_number}</span>
+          </div>
+          <div class="detail-row">
+            <span>Tanggal</span>
+            <span>${date}</span>
+          </div>
+          <div class="detail-row">
+            <span>Status</span>
+            <span class="order-status ${order.status}" style="padding:0.3rem 0.8rem;">${statusText[order.status]}</span>
+          </div>
+          <div class="detail-row">
+            <span>Pembayaran</span>
+            <span>${order.payment_method?.toUpperCase() || 'Transfer Bank'}</span>
+          </div>
+        </div>
+        
+        <div class="detail-section">
+          <h4><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman</h4>
+          <p><strong>${order.customer_name}</strong></p>
+          <p>${order.customer_phone}</p>
+          <p>${order.customer_address}</p>
+          <p>${order.customer_city}</p>
+          ${order.notes ? `<p style="color:var(--gray);font-style:italic;">Catatan: ${order.notes}</p>` : ''}
+        </div>
+        
+        <div class="detail-section">
+          <h4><i class="fas fa-box"></i> Produk Dipesan</h4>
+          ${items.map(item => `
+            <div class="order-item" style="border:none;padding:0.8rem 0;">
+              <img src="${item.image}" alt="${item.name}" style="width:60px;height:60px;">
+              <div class="order-item-info">
+                <div class="order-item-name">${item.name}</div>
+                <div class="order-item-qty">${item.qty} × Rp ${formatPrice(item.price)}</div>
+              </div>
+              <div style="font-weight:600;color:var(--primary);">Rp ${formatPrice(item.price * item.qty)}</div>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="detail-section">
+          <h4><i class="fas fa-receipt"></i> Ringkasan Pembayaran</h4>
+          <div class="detail-row">
+            <span>Subtotal</span>
+            <span>Rp ${formatPrice(order.subtotal)}</span>
+          </div>
+          <div class="detail-row">
+            <span>Ongkos Kirim</span>
+            <span>${order.shipping === 0 ? '<span style="color:var(--success);">GRATIS</span>' : 'Rp ' + formatPrice(order.shipping)}</span>
+          </div>
+          ${order.discount > 0 ? `
+            <div class="detail-row">
+              <span>Diskon Voucher</span>
+              <span style="color:var(--success);">-Rp ${formatPrice(order.discount)}</span>
+            </div>
+          ` : ''}
+          <div class="detail-row">
+            <span>Kode Unik</span>
+            <span>Rp ${order.unique_code || 0}</span>
+          </div>
+          <div class="detail-row total" style="margin-top:0.5rem;padding-top:0.5rem;border-top:2px solid var(--gray-light);">
+            <span>Total Pembayaran</span>
+            <span>Rp ${formatPrice(order.total)}</span>
+          </div>
+        </div>
+        
+        ${order.tracking_number ? `
+          <div class="detail-section">
+            <h4><i class="fas fa-truck"></i> Informasi Pengiriman</h4>
+            <div class="detail-row">
+              <span>No. Resi</span>
+              <span>${order.tracking_number}</span>
+            </div>
+          </div>
+        ` : ''}
+      `;
+      
+      document.getElementById('order-modal').classList.add('active');
+    }
+
+    async function cancelOrder(orderId) {
+      if (!confirm('Yakin ingin membatalkan pesanan ini?')) return;
+      
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({ status: 'cancelled' })
+          .eq('id', orderId);
+        
+        if (error) throw error;
+        
+        alert('Pesanan berhasil dibatalkan');
+        await loadOrders();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Gagal membatalkan pesanan');
+      }
+    }
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentFilter = tab.dataset.status;
+        renderOrders();
+      });
+    });
+
+    // Modal close
+    document.getElementById('modal-close').addEventListener('click', () => {
+      document.getElementById('order-modal').classList.remove('active');
+    });
+
+    document.getElementById('order-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        e.currentTarget.classList.remove('active');
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

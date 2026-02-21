@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="YandiTriCraft - Kerajinan Lebaran Premium, Box Hampers, Amplop THR, dan Gift Box Berkualitas di Palembang">
+  <meta name="keywords" content="kerajinan lebaran, box hampers, amplop THR, gift box, palembang">
+  <meta name="author" content="YandiTriCraft">
+  <meta name="theme-color" content="#ee4d2d">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="YandiTriCraft - Kerajinan Lebaran Premium">
+  <meta property="og:description" content="Kerajinan Lebaran Premium, Box Hampers, Amplop THR Berkualitas">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yanditricraft.netlify.app">
+  
+  <title>YandiTriCraft - Kerajinan Lebaran Premium</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- PRELOADER -->
+  <div id="preloader">
+    <div class="loader">
+      <div class="loader-logo">
+        <i class="fas fa-gift"></i>
+        <span>YandiTriCraft</span>
+      </div>
+      <div class="loader-spinner"></div>
+      <p class="loader-text">Memuat keindahan...</p>
+    </div>
+  </div>
+
+  <!-- MOBILE OVERLAY -->
+  <div class="overlay" id="overlay"></div>
+  <div class="mobile-overlay" id="mobile-overlay"></div>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-header">
+      <div class="mobile-user-info" id="mobile-user-info">
+        <i class="fas fa-user-circle"></i>
+        <span>Selamat Datang!</span>
+      </div>
+      <button class="mobile-menu-close" id="mobile-menu-close">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="mobile-menu-body">
+      <a href="index.html" class="active"><i class="fas fa-home"></i> Beranda</a>
+      <a href="#products"><i class="fas fa-box"></i> Produk</a>
+      <a href="#categories"><i class="fas fa-th-large"></i> Kategori</a>
+      <a href="#flash-sale"><i class="fas fa-bolt"></i> Flash Sale</a>
+      <a href="#testimonials"><i class="fas fa-star"></i> Testimoni</a>
+      <a href="#contact"><i class="fas fa-phone"></i> Kontak</a>
+      <div class="mobile-menu-divider"></div>
+      <div id="mobile-auth-section">
+        <!-- Auth buttons will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-top-bar">
+      <div class="header-top-left">
+        <span><i class="fas fa-map-marker-alt"></i> Palembang, Sumatera Selatan</span>
+        <span><i class="fas fa-phone"></i> +62 851-3481-8196</span>
+      </div>
+      <div class="header-top-right">
+        <a href="#"><i class="fas fa-question-circle"></i> Bantuan</a>
+        <div class="header-auth" id="header-auth">
+          <!-- Auth buttons will be rendered here -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="header-main">
+      <div class="header-content">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <a href="index.html" class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-gift"></i>
+          </div>
+          <div class="logo-text-container">
+            <div class="logo-text">YandiTriCraft</div>
+            <div class="logo-tagline">Kerajinan Premium</div>
+          </div>
+        </a>
+        
+        <div class="search-container">
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Cari box hampers, amplop, gift box..." autocomplete="off">
+            <button id="search-btn" aria-label="Search"><i class="fas fa-search"></i></button>
+          </div>
+          <div class="search-suggestions" id="search-suggestions"></div>
+        </div>
+        
+        <div class="header-icons">
+          <button class="icon-btn theme-toggle" id="theme-toggle" title="Mode Gelap" aria-label="Toggle Theme">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="icon-btn" id="wishlist-toggle" title="Wishlist" aria-label="Wishlist">
+            <i class="fas fa-heart"></i>
+            <span class="icon-badge" id="wishlist-count">0</span>
+          </button>
+          <button class="icon-btn" id="cart-toggle" title="Keranjang" aria-label="Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="icon-badge" id="cart-count">0</span>
+          </button>
+          <div class="user-dropdown" id="user-dropdown">
+            <button class="icon-btn user-btn" id="user-btn" title="Akun" aria-label="Account">
+              <i class="fas fa-user"></i>
+            </button>
+            <div class="dropdown-menu" id="user-menu">
+              <!-- User menu will be rendered here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <nav class="nav-bar">
+      <div class="nav-container">
+        <ul class="nav-menu">
+          <li><a href="index.html" class="active"><i class="fas fa-home"></i> Beranda</a></li>
+          <li><a href="#products"><i class="fas fa-box"></i> Produk</a></li>
+          <li><a href="#categories"><i class="fas fa-th-large"></i> Kategori</a></li>
+          <li><a href="#flash-sale"><i class="fas fa-bolt"></i> Flash Sale</a></li>
+          <li><a href="#testimonials"><i class="fas fa-star"></i> Testimoni</a></li>
+          <li><a href="#contact"><i class="fas fa-envelope"></i> Kontak</a></li>
+        </ul>
+        <div class="nav-promo">
+          <i class="fas fa-truck"></i> Gratis Ongkir Palembang!
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-slider">
+      <div class="hero-slide active">
+        <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=1600" alt="Hero 1">
+        <div class="hero-content">
+          <span class="hero-badge"><i class="fas fa-star"></i> Best Seller 2024</span>
+          <h1 class="hero-title">Box Hampers Lebaran Premium</h1>
+          <p class="hero-subtitle">Hadiah spesial untuk orang tersayang dengan kemasan eksklusif dan elegan</p>
+          <div class="hero-buttons">
+            <a href="#products" class="btn btn-primary">
+              <i class="fas fa-shopping-bag"></i> Belanja Sekarang
+            </a>
+            <a href="#categories" class="btn btn-secondary">
+              <i class="fas fa-th-large"></i> Lihat Katalog
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=1600" alt="Hero 2">
+        <div class="hero-content">
+          <span class="hero-badge"><i class="fas fa-percent"></i> Diskon Hingga 50%</span>
+          <h1 class="hero-title">Promo Spesial Ramadhan</h1>
+          <p class="hero-subtitle">Dapatkan harga terbaik untuk semua produk kerajinan kami</p>
+          <div class="hero-buttons">
+            <a href="#flash-sale" class="btn btn-primary">
+              <i class="fas fa-bolt"></i> Lihat Promo
+            </a>
+            <a href="https://wa.me/6285134818196" target="_blank" class="btn btn-secondary">
+              <i class="fab fa-whatsapp"></i> Hubungi Kami
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-slide">
+        <img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=1600" alt="Hero 3">
+        <div class="hero-content">
+          <span class="hero-badge"><i class="fas fa-gift"></i> Custom Order</span>
+          <h1 class="hero-title">Kreasi Sesuai Keinginan</h1>
+          <p class="hero-subtitle">Buat hampers unik dengan desain dan isi sesuai selera Anda</p>
+          <div class="hero-buttons">
+            <a href="https://wa.me/6285134818196" target="_blank" class="btn btn-primary">
+              <i class="fas fa-palette"></i> Pesan Custom
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button class="hero-arrow prev" id="hero-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+    <button class="hero-arrow next" id="hero-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+    
+    <div class="hero-nav" id="hero-nav">
+      <div class="hero-dot active" data-slide="0"></div>
+      <div class="hero-dot" data-slide="1"></div>
+      <div class="hero-dot" data-slide="2"></div>
+    </div>
+  </section>
+
+  <!-- FEATURES BAR -->
+  <section class="features-bar">
+    <div class="features-container">
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-truck"></i></div>
+        <div class="feature-text">
+          <h4>Gratis Ongkir</h4>
+          <p>Area Palembang</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="feature-text">
+          <h4>Garansi Kualitas</h4>
+          <p>100% Produk Original</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-headset"></i></div>
+        <div class="feature-text">
+          <h4>Layanan 24/7</h4>
+          <p>Fast Response</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon"><i class="fas fa-undo"></i></div>
+        <div class="feature-text">
+          <h4>Bisa Return</h4>
+          <p>Jika Tidak Sesuai</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES SECTION -->
+  <section class="categories-section" id="categories">
+    <div class="section-header">
+      <span class="section-badge">Kategori</span>
+      <h2 class="section-title">Pilih Kategori Produk</h2>
+      <p class="section-subtitle">Temukan kerajinan premium untuk berbagai kebutuhan</p>
+    </div>
+    
+    <div class="categories-grid">
+      <a href="#" class="category-card active" data-category="all">
+        <div class="category-icon"><i class="fas fa-th-large"></i></div>
+        <div class="category-name">Semua Produk</div>
+        <div class="category-count">24 Produk</div>
+      </a>
+      <a href="#" class="category-card" data-category="hampers">
+        <div class="category-icon"><i class="fas fa-gift"></i></div>
+        <div class="category-name">Box Hampers</div>
+        <div class="category-count">8 Produk</div>
+      </a>
+      <a href="#" class="category-card" data-category="amplop">
+        <div class="category-icon"><i class="fas fa-envelope-open-text"></i></div>
+        <div class="category-name">Amplop THR</div>
+        <div class="category-count">6 Produk</div>
+      </a>
+      <a href="#" class="category-card" data-category="buku">
+        <div class="category-icon"><i class="fas fa-book"></i></div>
+        <div class="category-name">Buku Anak</div>
+        <div class="category-count">5 Produk</div>
+      </a>
+      <a href="#" class="category-card" data-category="dekorasi">
+        <div class="category-icon"><i class="fas fa-star"></i></div>
+        <div class="category-name">Dekorasi</div>
+        <div class="category-count">5 Produk</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FLASH SALE SECTION -->
+  <section class="flash-sale" id="flash-sale">
+    <div class="flash-sale-container">
+      <div class="flash-header">
+        <div class="flash-title">
+          <span class="flash-icon">⚡</span>
+          <h2>Flash Sale</h2>
+        </div>
+        <div class="flash-countdown">
+          <span class="countdown-label">Berakhir dalam:</span>
+          <div class="countdown-box" id="hours">08</div>
+          <span class="countdown-separator">:</span>
+          <div class="countdown-box" id="minutes">45</div>
+          <span class="countdown-separator">:</span>
+          <div class="countdown-box" id="seconds">32</div>
+        </div>
+      </div>
+      
+      <div class="flash-products" id="flash-products">
+        <!-- Flash sale products will be rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="products-section" id="products">
+    <div class="section-header">
+      <span class="section-badge">Koleksi Kami</span>
+      <h2 class="section-title">Produk Pilihan</h2>
+      <p class="section-subtitle">Kerajinan berkualitas dengan harga terjangkau</p>
+    </div>
+    
+    <div class="products-toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">Semua</button>
+        <button class="filter-tab" data-filter="terbaru">Terbaru</button>
+        <button class="filter-tab" data-filter="terlaris">Terlaris</button>
+        <button class="filter-tab" data-filter="promo">Promo</button>
+      </div>
+      
+      <div class="sort-dropdown">
+        <button class="sort-btn" id="sort-btn">
+          <i class="fas fa-sort"></i> Urutkan
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="sort-menu" id="sort-menu">
+          <div class="sort-option" data-sort="default">Relevansi</div>
+          <div class="sort-option" data-sort="price-low">Harga: Rendah ke Tinggi</div>
+          <div class="sort-option" data-sort="price-high">Harga: Tinggi ke Rendah</div>
+          <div class="sort-option" data-sort="name">Nama: A-Z</div>
+          <div class="sort-option" data-sort="rating">Rating Tertinggi</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="products-grid" id="products-grid">
+      <!-- Products will be rendered here -->
+    </div>
+    
+    <div class="load-more">
+      <button class="load-more-btn" id="load-more-btn">
+        <i class="fas fa-plus"></i> Muat Lebih Banyak
+      </button>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials" id="testimonials">
+    <div class="testimonials-container">
+      <div class="section-header">
+        <span class="section-badge">Testimoni</span>
+        <h2 class="section-title">Apa Kata Pelanggan</h2>
+        <p class="section-subtitle">Kepuasan pelanggan adalah prioritas kami</p>
+      </div>
+      
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="testimonial-avatar">
+              <div class="testimonial-author">
+                <h4>Sarah Amelia</h4>
+                <p>Jakarta</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Box hampersnya cantik banget! Packagingnya rapi dan pengirimannya cepat. Pasti order lagi tahun depan!"</p>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="testimonial-avatar">
+              <div class="testimonial-author">
+                <h4>Ahmad Fauzi</h4>
+                <p>Palembang</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p class="testimonial-text">"Kualitas produknya premium, harga bersahabat. Admin fast response dan sangat membantu. Recommended!"</p>
+          </div>
+        </div>
+        
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="testimonial-header">
+              <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="testimonial-avatar">
+              <div class="testimonial-author">
+                <h4>Rina Wulandari</h4>
+                <p>Bandung</p>
+              </div>
+            </div>
+            <div class="testimonial-rating">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+            </div>
+            <p class="testimonial-text">"Amplop lebarannya bagus dan unik, beda dari yang lain. Anak-anak suka banget. Terima kasih YandiTriCraft!"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <div class="newsletter-container">
+      <div class="newsletter-icon">
+        <i class="fas fa-envelope-open-text"></i>
+      </div>
+      <h2>🎁 Dapatkan Diskon 10%</h2>
+      <p>Daftar newsletter kami dan dapatkan voucher diskon untuk pembelian pertama</p>
+      <form class="newsletter-form" id="newsletter-form">
+        <input type="email" placeholder="Masukkan email Anda" required>
+        <button type="submit"><i class="fas fa-paper-plane"></i> Daftar</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-gift"></i>
+          </div>
+          <div class="logo-text-container">
+            <div class="logo-text">YandiTriCraft</div>
+            <div class="logo-tagline">Kerajinan Premium</div>
+          </div>
+        </a>
+        <p>Spesialis kerajinan Lebaran premium dengan kualitas terbaik. Box hampers, amplop THR, gift box, dan berbagai kreasi unik lainnya.</p>
+        <div class="footer-social">
+          <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-link" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://wa.me/6285134818196" class="social-link" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Produk</h4>
+        <ul class="footer-links">
+          <li><a href="#">Box Hampers</a></li>
+          <li><a href="#">Amplop THR</a></li>
+          <li><a href="#">Buku Anak</a></li>
+          <li><a href="#">Dekorasi Lebaran</a></li>
+          <li><a href="#">Custom Order</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Bantuan</h4>
+        <ul class="footer-links">
+          <li><a href="#">Cara Pemesanan</a></li>
+          <li><a href="#">Metode Pembayaran</a></li>
+          <li><a href="#">Pengiriman</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Syarat & Ketentuan</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Hubungi Kami</h4>
+        <div class="footer-contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Palembang, Sumatera Selatan, Indonesia</span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fas fa-phone"></i>
+          <span>+62 851-3481-8196</span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>yanditricraft@gmail.com</span>
+        </div>
+        <div class="footer-contact-item">
+          <i class="fas fa-clock"></i>
+          <span>Senin - Sabtu: 08:00 - 21:00</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2024 YandiTriCraft. All Rights Reserved.</p>
+      <div class="payment-methods">
+        <span>Pembayaran:</span>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/BSI_Logo.svg" alt="BSI">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg" alt="OVO">
+      </div>
+    </div>
+  </footer>
+
+  <!-- MINI CART SIDEBAR -->
+  <div id="mini-cart">
+    <div class="cart-header">
+      <h3><i class="fas fa-shopping-cart"></i> Keranjang</h3>
+      <button class="cart-close" id="cart-close" aria-label="Close">×</button>
+    </div>
+    <div class="cart-body" id="cart-body">
+      <div class="cart-empty">
+        <i class="fas fa-shopping-cart"></i>
+        <h4>Keranjang Kosong</h4>
+        <p>Belum ada produk di keranjang</p>
+      </div>
+    </div>
+    <div class="cart-footer" id="cart-footer" style="display:none;">
+      <div class="cart-subtotal">
+        <span>Subtotal:</span>
+        <strong id="cart-subtotal">Rp 0</strong>
+      </div>
+      <button class="checkout-btn" id="checkout-btn">
+        <i class="fas fa-credit-card"></i> Checkout
+      </button>
+      <a href="#products" class="continue-shopping" id="continue-shopping">
+        <i class="fas fa-arrow-left"></i> Lanjut Belanja
+      </a>
+    </div>
+  </div>
+
+  <!-- WISHLIST SIDEBAR -->
+  <div id="wishlist-sidebar">
+    <div class="wishlist-header">
+      <h3><i class="fas fa-heart"></i> Wishlist</h3>
+      <button class="cart-close" id="wishlist-close" aria-label="Close">×</button>
+    </div>
+    <div class="wishlist-body" id="wishlist-body">
+      <div class="cart-empty">
+        <i class="fas fa-heart"></i>
+        <h4>Wishlist Kosong</h4>
+        <p>Belum ada produk favorit</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkout-modal">
+    <div class="checkout-container">
+      <div class="checkout-header">
+        <h2><i class="fas fa-shopping-bag"></i> Checkout</h2>
+        <button class="checkout-close" id="checkout-modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="checkout-body">
+        <div class="checkout-section">
+          <h3><i class="fas fa-truck"></i> Informasi Pengiriman</h3>
+          <div class="form-group">
+            <label>Nama Lengkap *</label>
+            <input type="text" id="shipping-name" placeholder="Masukkan nama lengkap" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>No. WhatsApp *</label>
+              <input type="tel" id="shipping-phone" placeholder="08xxxxxxxxxx" required>
+            </div>
+            <div class="form-group">
+              <label>Kota/Kabupaten *</label>
+              <select id="shipping-city">
+                <option value="">Pilih Kota</option>
+                <option value="Palembang">Palembang (Gratis Ongkir)</option>
+                <option value="Jakarta">Jakarta</option>
+                <option value="Bandung">Bandung</option>
+                <option value="Surabaya">Surabaya</option>
+                <option value="Lainnya">Lainnya</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Alamat Lengkap *</label>
+            <textarea id="shipping-address" rows="3" placeholder="Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Catatan (Opsional)</label>
+            <textarea id="shipping-notes" rows="2" placeholder="Catatan tambahan untuk penjual"></textarea>
+          </div>
+        </div>
+        
+        <div class="checkout-section">
+          <h3><i class="fas fa-receipt"></i> Ringkasan Pesanan</h3>
+          <div class="order-summary" id="order-summary">
+            <!-- Order summary will be rendered here -->
+          </div>
+        </div>
+        
+        <div class="checkout-section">
+          <h3><i class="fas fa-ticket-alt"></i> Voucher</h3>
+          <div class="voucher-input">
+            <input type="text" id="voucher-code" placeholder="Masukkan kode voucher">
+            <button type="button" id="apply-voucher">Terapkan</button>
+          </div>
+        </div>
+        
+        <div class="checkout-section">
+          <h3><i class="fas fa-credit-card"></i> Metode Pembayaran</h3>
+          <div class="payment-options" id="payment-options">
+            <label class="payment-option selected">
+              <input type="radio" name="payment" value="bca" checked>
+              <div class="payment-radio"></div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" class="payment-logo">
+              <div class="payment-detail">
+                <strong>Bank BCA</strong>
+                <small>1234567890 a.n Yandi Trismadiadi</small>
+              </div>
+              <button class="copy-btn" data-copy="1234567890" type="button">Copy</button>
+            </label>
+            
+            <label class="payment-option">
+              <input type="radio" name="payment" value="bsi">
+              <div class="payment-radio"></div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/BSI_Logo.svg" alt="BSI" class="payment-logo">
+              <div class="payment-detail">
+                <strong>Bank BSI</strong>
+                <small>3456789012 a.n Yandi Trismadiadi</small>
+              </div>
+              <button class="copy-btn" data-copy="3456789012" type="button">Copy</button>
+            </label>
+            
+            <label class="payment-option">
+              <input type="radio" name="payment" value="dana">
+              <div class="payment-radio"></div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA" class="payment-logo">
+              <div class="payment-detail">
+                <strong>DANA</strong>
+                <small>085134818196 a.n Yandi Trismadiadi</small>
+              </div>
+              <button class="copy-btn" data-copy="085134818196" type="button">Copy</button>
+            </label>
+            
+            <label class="payment-option">
+              <input type="radio" name="payment" value="ovo">
+              <div class="payment-radio"></div>
+              <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg" alt="OVO" class="payment-logo">
+              <div class="payment-detail">
+                <strong>OVO</strong>
+                <small>085134818196 a.n Yandi Trismadiadi</small>
+              </div>
+              <button class="copy-btn" data-copy="085134818196" type="button">Copy</button>
+            </label>
+          </div>
+        </div>
+        
+        <div class="unique-code-notice">
+          <h4><i class="fas fa-info-circle"></i> Penting!</h4>
+          <p>Transfer sesuai nominal + kode unik yang akan ditampilkan setelah konfirmasi pesanan.</p>
+        </div>
+        
+        <button class="confirm-order-btn" id="confirm-order">
+          <i class="fab fa-whatsapp"></i> Konfirmasi & Kirim via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK VIEW MODAL -->
+  <div id="quick-view-modal">
+    <div class="quick-view-container">
+      <div class="quick-view-image">
+        <button class="quick-view-close" id="quick-view-close" aria-label="Close">×</button>
+        <img id="qv-image" src="" alt="Product">
+      </div>
+      <div class="quick-view-info">
+        <div class="quick-view-category" id="qv-category">Kategori</div>
+        <h2 class="quick-view-name" id="qv-name">Nama Produk</h2>
+        <div class="quick-view-rating" id="qv-rating">
+          <div class="stars"></div>
+          <span class="rating-count"></span>
+        </div>
+        <div class="quick-view-price">
+          <span class="quick-view-current" id="qv-price">Rp 99.000</span>
+          <span class="quick-view-original" id="qv-original">Rp 150.000</span>
+        </div>
+        <p class="quick-view-desc" id="qv-desc">Deskripsi produk.</p>
+        <div class="quick-view-qty">
+          <label>Jumlah:</label>
+          <div class="qty-control">
+            <button type="button" id="qv-qty-minus">-</button>
+            <input type="number" id="qv-qty" value="1" min="1">
+            <button type="button" id="qv-qty-plus">+</button>
+          </div>
+        </div>
+        <div class="quick-view-actions">
+          <button class="add-cart-btn" id="qv-add-cart">
+            <i class="fas fa-shopping-cart"></i> Tambah ke Keranjang
+          </button>
+          <button class="wishlist-btn" id="qv-wishlist">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING ELEMENTS -->
+  <a href="https://wa.me/6285134818196" class="floating-wa" target="_blank" title="Chat WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+    <span class="wa-tooltip">Ada yang bisa dibantu?</span>
+  </a>
+
+  <button class="scroll-top" id="scroll-top" title="Kembali ke Atas" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast">
+    <div class="toast-icon"><i class="fas fa-check"></i></div>
+    <div class="toast-content">
+      <div class="toast-title">Berhasil!</div>
+      <div class="toast-message">Produk ditambahkan ke keranjang</div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

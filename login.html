@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Login ke akun YandiTriCraft Anda">
+  <title>Login - YandiTriCraft</title>
+  
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    :root {
+      --primary: #ee4d2d;
+      --primary-dark: #d73211;
+      --primary-light: #ff6b4a;
+      --secondary: #222;
+      --accent: #ffd700;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --info: #3498db;
+      --light: #f8f9fa;
+      --dark: #1a1a2e;
+      --gray: #6c757d;
+      --gray-light: #e9ecef;
+      --white: #ffffff;
+      --shadow: 0 4px 15px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 40px rgba(0,0,0,0.15);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius: 12px;
+      --radius-lg: 20px;
+    }
+
+    [data-theme="dark"] {
+      --light: #1a1a2e;
+      --white: #16213e;
+      --secondary: #e9ecef;
+      --gray-light: #2d3748;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 50%, #1a1a2e 100%);
+    }
+
+    .auth-container {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* LEFT SIDE - BRANDING */
+    .auth-branding {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-branding::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+      background-size: 30px 30px;
+      animation: float 20s linear infinite;
+    }
+
+    @keyframes float {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-30px, -30px); }
+    }
+
+    .branding-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .branding-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .branding-logo-icon {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: var(--primary);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .branding-logo-text {
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+
+    .branding-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .branding-description {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .branding-features {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .branding-feature {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255,255,255,0.1);
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+    }
+
+    .branding-feature i {
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    /* RIGHT SIDE - FORM */
+    .auth-form-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      background: var(--white);
+      border-radius: 30px 0 0 30px;
+      box-shadow: -10px 0 50px rgba(0,0,0,0.2);
+    }
+
+    .auth-form-wrapper {
+      width: 100%;
+      max-width: 450px;
+      padding: 2rem;
+    }
+
+    .auth-form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .auth-form-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-form-header p {
+      color: var(--gray);
+    }
+
+    /* SOCIAL LOGIN */
+    .social-login {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .social-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem;
+      border: 2px solid var(--gray-light);
+      background: var(--white);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--secondary);
+      transition: var(--transition);
+    }
+
+    .social-btn:hover {
+      border-color: var(--primary);
+      background: rgba(238,77,45,0.05);
+    }
+
+    .social-btn.google i { color: #ea4335; }
+    .social-btn.facebook i { color: #1877f2; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gray-light);
+    }
+
+    /* FORM */
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--secondary);
+    }
+
+    .form-group label .required { color: var(--danger); }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray);
+      transition: var(--transition);
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3rem;
+      border: 2px solid var(--gray-light);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--white);
+      color: var(--secondary);
+    }
+
+    .input-wrapper input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(238,77,45,0.1);
+    }
+
+    .input-wrapper input:focus + i { color: var(--primary); }
+
+    .input-wrapper .toggle-password {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--gray);
+      padding: 0;
+      font-size: 1.1rem;
+    }
+
+    .form-group.error input { border-color: var(--danger); }
+    .form-group.error .error-message { display: block; }
+
+    .error-message {
+      display: none;
+      color: var(--danger);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+
+    /* REMEMBER & FORGOT */
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .remember-me input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+
+    .forgot-password {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .forgot-password:hover { text-decoration: underline; }
+
+    /* SUBMIT BUTTON */
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .submit-btn:hover::before { left: 100%; }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(238,77,45,0.4);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .submit-btn.loading .spinner { display: block; }
+    .submit-btn.loading .btn-text { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* FOOTER */
+    .auth-footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--gray-light);
+    }
+
+    .auth-footer p { color: var(--gray); }
+
+    .auth-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover { text-decoration: underline; }
+
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      color: var(--gray);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-home:hover { color: var(--primary); }
+
+    /* ALERT */
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.9rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert.show { display: flex; }
+
+    .alert.success {
+      background: rgba(39,174,96,0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .alert.error {
+      background: rgba(231,76,60,0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .auth-container { flex-direction: column; }
+      
+      .auth-branding {
+        padding: 2rem 1.5rem;
+        min-height: auto;
+      }
+
+      .branding-features { display: none; }
+      .branding-description { margin-bottom: 0; }
+
+      .auth-form-container {
+        border-radius: 30px 30px 0 0;
+        margin-top: -20px;
+        position: relative;
+        z-index: 10;
+      }
+
+      .social-login { flex-direction: column; }
+      .form-options { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (max-width: 480px) {
+      .branding-logo-icon { width: 60px; height: 60px; font-size: 1.8rem; }
+      .branding-logo-text { font-size: 1.5rem; }
+      .branding-title { font-size: 1.4rem; }
+      .auth-form-header h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <!-- LEFT - BRANDING -->
+    <div class="auth-branding">
+      <div class="branding-content">
+        <div class="branding-logo">
+          <div class="branding-logo-icon">
+            <i class="fas fa-gift"></i>
+          </div>
+          <div class="branding-logo-text">YandiTriCraft</div>
+        </div>
+        
+        <h2 class="branding-title">Selamat Datang Kembali!</h2>
+        <p class="branding-description">
+          Masuk ke akun Anda untuk pengalaman belanja yang lebih personal, 
+          tracking pesanan, dan penawaran eksklusif.
+        </p>
+        
+        <div class="branding-features">
+          <div class="branding-feature">
+            <i class="fas fa-tags"></i>
+            <span>Diskon Eksklusif Member</span>
+          </div>
+          <div class="branding-feature">
+            <i class="fas fa-truck"></i>
+            <span>Tracking Pesanan Real-time</span>
+          </div>
+          <div class="branding-feature">
+            <i class="fas fa-heart"></i>
+            <span>Simpan Wishlist Favorit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT - FORM -->
+    <div class="auth-form-container">
+      <div class="auth-form-wrapper">
+        <div class="auth-form-header">
+          <h1>Masuk</h1>
+          <p>Masuk ke akun YandiTriCraft Anda</p>
+        </div>
+
+        <div class="alert" id="alert-box">
+          <i class="fas fa-info-circle"></i>
+          <span id="alert-message"></span>
+        </div>
+
+        <div class="social-login">
+          <button type="button" class="social-btn google" id="google-login">
+            <i class="fab fa-google"></i>
+            <span>Google</span>
+          </button>
+          <button type="button" class="social-btn facebook" id="facebook-login">
+            <i class="fab fa-facebook-f"></i>
+            <span>Facebook</span>
+          </button>
+        </div>
+
+        <div class="divider">atau masuk dengan email</div>
+
+        <form class="auth-form" id="login-form">
+          <div class="form-group">
+            <label for="email">Email <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="email" id="email" placeholder="nama@email.com" required autocomplete="email">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <span class="error-message">Email tidak valid</span>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password <span class="required">*</span></label>
+            <div class="input-wrapper">
+              <input type="password" id="password" placeholder="Masukkan password" required autocomplete="current-password">
+              <i class="fas fa-lock"></i>
+              <button type="button" class="toggle-password">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <span class="error-message">Password minimal 6 karakter</span>
+          </div>
+
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox" id="remember">
+              <span>Ingat saya</span>
+            </label>
+            <a href="#" class="forgot-password">Lupa password?</a>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-btn">
+            <span class="btn-text"><i class="fas fa-sign-in-alt"></i> Masuk</span>
+            <span class="spinner"></span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>Belum punya akun? <a href="register.html">Daftar sekarang</a></p>
+          <a href="index.html" class="back-home">
+            <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/supabase-config.js"></script>
+  <script>
+    // Toggle password visibility
+    document.querySelector('.toggle-password').addEventListener('click', function() {
+      const input = document.getElementById('password');
+      const icon = this.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+
+    // Show alert
+    function showAlert(message, type = 'error') {
+      const alertBox = document.getElementById('alert-box');
+      const alertMessage = document.getElementById('alert-message');
+      const alertIcon = alertBox.querySelector('i');
+      
+      alertBox.className = `alert show ${type}`;
+      alertMessage.textContent = message;
+      alertIcon.className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      setTimeout(() => alertBox.classList.remove('show'), 5000);
+    }
+
+    // Validate email
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Login form submission
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const submitBtn = document.getElementById('submit-btn');
+      
+      // Reset errors
+      document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+      
+      // Validate
+      let hasError = false;
+      
+      if (!validateEmail(email)) {
+        document.getElementById('email').closest('.form-group').classList.add('error');
+        hasError = true;
+      }
+      
+      if (password.length < 6) {
+        document.getElementById('password').closest('.form-group').classList.add('error');
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      // Show loading
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+        
+        if (error) throw error;
+        
+        showAlert('Login berhasil! Mengalihkan...', 'success');
+        
+        setTimeout(() => {
+          const redirect = sessionStorage.getItem('redirectAfterLogin') || 'index.html';
+          sessionStorage.removeItem('redirectAfterLogin');
+          window.location.href = redirect;
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        showAlert(error.message || 'Email atau password salah', 'error');
+      } finally {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Google login
+    document.getElementById('google-login').addEventListener('click', async () => {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin + '/index.html' }
+        });
+        if (error) throw error;
+      } catch (error) {
+        showAlert('Gagal login dengan Google', 'error');
+      }
+    });
+
+    // Facebook login
+    document.getElementById('facebook-login').addEventListener('click', async () => {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'facebook',
+          options: { redirectTo: window.location.origin + '/index.html' }
+        });
+        if (error) throw error;
+      } catch (error) {
+        showAlert('Gagal login dengan Facebook', 'error');
+      }
+    });
+
+    // Check if already logged in
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) window.location.href = 'index.html';
+    }
+    checkAuth();
+
+    // Theme check
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
+</body>
+</html>

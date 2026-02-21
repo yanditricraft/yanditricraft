@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Saya - YandiTriCraft</title>
+  
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    .profile-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      min-height: calc(100vh - 150px);
+    }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      color: var(--secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .page-header h1 i { color: var(--primary); }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+
+    .profile-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .profile-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: white;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 5px solid white;
+      margin: 0 auto 1rem;
+      object-fit: cover;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .profile-email {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+
+    .profile-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .profile-body {
+      padding: 2rem;
+    }
+
+    .profile-section {
+      margin-bottom: 2rem;
+    }
+
+    .profile-section:last-child { margin-bottom: 0; }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 2px solid var(--gray-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i { color: var(--primary); }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--secondary);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 2px solid var(--gray-light);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: var(--transition);
+      background: var(--white);
+      color: var(--secondary);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(238,77,45,0.1);
+    }
+
+    .form-group input:disabled {
+      background: var(--light);
+      cursor: not-allowed;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      padding-top: 1rem;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(238,77,45,0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gray-light);
+      color: var(--secondary);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-danger {
+      background: transparent;
+      border: 2px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .alert.show { display: flex; }
+    .alert.success { background: rgba(39,174,96,0.1); border: 1px solid var(--success); color: var(--success); }
+    .alert.error { background: rgba(231,76,60,0.1); border: 1px solid var(--danger); color: var(--danger); }
+
+    .password-section {
+      background: var(--light);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      margin-top: 1rem;
+    }
+
+    .password-section h4 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      color: var(--secondary);
+    }
+
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; }
+      .profile-header { padding: 2rem 1rem; }
+      .profile-body { padding: 1.5rem; }
+      .form-actions { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="preloader">
+    <div class="loader">
+      <div class="loader-logo"><i class="fas fa-gift"></i><span>YandiTriCraft</span></div>
+      <div class="loader-spinner"></div>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-main">
+      <div class="header-content" style="max-width:900px;margin:0 auto;">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fas fa-gift"></i></div>
+          <div class="logo-text-container">
+            <div class="logo-text">YandiTriCraft</div>
+          </div>
+        </a>
+        <div class="header-icons">
+          <a href="dashboard.html" class="icon-btn" title="Dashboard"><i class="fas fa-tachometer-alt"></i></a>
+          <a href="index.html" class="icon-btn" title="Beranda"><i class="fas fa-home"></i></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="profile-container">
+    <div class="page-header">
+      <h1><i class="fas fa-user-cog"></i> Profil Saya</h1>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <i class="fas fa-chevron-right"></i>
+        <a href="dashboard.html">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Profil</span>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-header">
+        <img id="profile-avatar" src="https://ui-avatars.com/api/?name=User&background=ee4d2d&color=fff&size=150" alt="Avatar" class="profile-avatar">
+        <h2 class="profile-name" id="profile-name">Loading...</h2>
+        <p class="profile-email" id="profile-email">loading@email.com</p>
+        <span class="profile-badge"><i class="fas fa-crown"></i> Member</span>
+      </div>
+
+      <div class="profile-body">
+        <div class="alert" id="alert-box">
+          <i class="fas fa-info-circle"></i>
+          <span id="alert-message"></span>
+        </div>
+
+        <form id="profile-form">
+          <div class="profile-section">
+            <h3 class="section-title"><i class="fas fa-user"></i> Informasi Pribadi</h3>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nama Depan</label>
+                <input type="text" id="first-name" placeholder="Nama depan">
+              </div>
+              <div class="form-group">
+                <label>Nama Belakang</label>
+                <input type="text" id="last-name" placeholder="Nama belakang">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" disabled>
+              </div>
+              <div class="form-group">
+                <label>No. WhatsApp</label>
+                <input type="tel" id="phone" placeholder="08xxxxxxxxxx">
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section">
+            <h3 class="section-title"><i class="fas fa-map-marker-alt"></i> Alamat Pengiriman Default</h3>
+            
+            <div class="form-group">
+              <label>Alamat Lengkap</label>
+              <textarea id="address" rows="3" placeholder="Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Kota/Kabupaten</label>
+                <input type="text" id="city" placeholder="Nama kota">
+              </div>
+              <div class="form-group">
+                <label>Provinsi</label>
+                <input type="text" id="province" placeholder="Nama provinsi">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Kode Pos</label>
+              <input type="text" id="postal-code" placeholder="12345" style="max-width:200px;">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="save-btn">
+              <i class="fas fa-save"></i> Simpan Perubahan
+            </button>
+            <button type="button" class="btn btn-outline" onclick="window.location.reload()">
+              <i class="fas fa-undo"></i> Reset
+            </button>
+          </div>
+        </form>
+
+        <div class="profile-section" style="margin-top:2rem;">
+          <h3 class="section-title"><i class="fas fa-lock"></i> Keamanan</h3>
+          
+          <div class="password-section">
+            <h4>Ubah Password</h4>
+            <p style="color:var(--gray);font-size:0.9rem;margin-bottom:1rem;">
+              Untuk mengubah password, silakan logout dan gunakan fitur "Lupa Password" di halaman login.
+            </p>
+            <button type="button" class="btn btn-outline" onclick="resetPassword()">
+              <i class="fas fa-key"></i> Reset Password
+            </button>
+          </div>
+
+          <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--gray-light);">
+            <h4 style="color:var(--danger);margin-bottom:1rem;">Zona Bahaya</h4>
+            <button type="button" class="btn btn-danger" onclick="deleteAccount()">
+              <i class="fas fa-trash-alt"></i> Hapus Akun
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/supabase-config.js"></script>
+  <script>
+    let currentUser = null;
+    let userProfile = null;
+
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      currentUser = user;
+      
+      // Load profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      userProfile = profile || {};
+      
+      // Populate form
+      const firstName = profile?.first_name || user.user_metadata?.first_name || '';
+      const lastName = profile?.last_name || user.user_metadata?.last_name || '';
+      const fullName = `${firstName} ${lastName}`.trim() || user.email?.split('@')[0];
+      
+      document.getElementById('profile-name').textContent = fullName;
+      document.getElementById('profile-email').textContent = user.email;
+      document.getElementById('profile-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=ee4d2d&color=fff&size=150`;
+      
+      document.getElementById('first-name').value = firstName;
+      document.getElementById('last-name').value = lastName;
+      document.getElementById('email').value = user.email;
+      document.getElementById('phone').value = profile?.phone || user.user_metadata?.phone || '';
+      document.getElementById('address').value = profile?.address || '';
+      document.getElementById('city').value = profile?.city || '';
+      document.getElementById('province').value = profile?.province || '';
+      document.getElementById('postal-code').value = profile?.postal_code || '';
+      
+      document.getElementById('preloader').classList.add('hidden');
+    }
+
+    function showAlert(message, type = 'success') {
+      const alertBox = document.getElementById('alert-box');
+      alertBox.className = `alert show ${type}`;
+      document.getElementById('alert-message').textContent = message;
+      alertBox.querySelector('i').className = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+      
+      setTimeout(() => alertBox.classList.remove('show'), 5000);
+      
+      // Scroll to alert
+      alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Save profile
+    document.getElementById('profile-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const saveBtn = document.getElementById('save-btn');
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+      
+      const updates = {
+        first_name: document.getElementById('first-name').value.trim(),
+        last_name: document.getElementById('last-name').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        province: document.getElementById('province').value.trim(),
+        postal_code: document.getElementById('postal-code').value.trim(),
+        updated_at: new Date().toISOString()
+      };
+      
+      try {
+        // Check if profile exists
+        const { data: existing } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', currentUser.id)
+          .single();
+        
+        if (existing) {
+          // Update
+          const { error } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', currentUser.id);
+          
+          if (error) throw error;
+        } else {
+          // Insert
+          const { error } = await supabase
+            .from('profiles')
+            .insert([{ id: currentUser.id, email: currentUser.email, ...updates }]);
+          
+          if (error) throw error;
+        }
+        
+        // Update auth metadata
+        await supabase.auth.updateUser({
+          data: {
+            first_name: updates.first_name,
+            last_name: updates.last_name,
+            phone: updates.phone
+          }
+        });
+        
+        showAlert('Profil berhasil disimpan!', 'success');
+        
+        // Update header
+        const fullName = `${updates.first_name} ${updates.last_name}`.trim();
+        document.getElementById('profile-name').textContent = fullName;
+        document.getElementById('profile-avatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=ee4d2d&color=fff&size=150`;
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Gagal menyimpan profil', 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Perubahan';
+      }
+    });
+
+    async function resetPassword() {
+      if (!confirm('Kami akan mengirim link reset password ke email Anda. Lanjutkan?')) return;
+      
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(currentUser.email, {
+          redirectTo: window.location.origin + '/login.html'
+        });
+        
+        if (error) throw error;
+        
+        showAlert('Link reset password telah dikirim ke email Anda', 'success');
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Gagal mengirim link reset password', 'error');
+      }
+    }
+
+    async function deleteAccount() {
+      if (!confirm('PERINGATAN: Tindakan ini tidak dapat dibatalkan. Semua data Anda akan dihapus permanen. Yakin ingin melanjutkan?')) return;
+      
+      if (!confirm('Sekali lagi, yakin ingin MENGHAPUS akun Anda?')) return;
+      
+      alert('Untuk keamanan, silakan hubungi admin via WhatsApp untuk menghapus akun Anda.');
+      window.open('https://wa.me/6285134818196?text=' + encodeURIComponent('Halo, saya ingin menghapus akun saya dengan email: ' + currentUser.email), '_blank');
+    }
+
+    init();
+  </script>
+</body>
+</html>
